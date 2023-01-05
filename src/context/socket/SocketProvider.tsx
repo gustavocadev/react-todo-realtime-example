@@ -13,7 +13,9 @@ type Props = {
 
 export const SocketProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(socketReducer, SOCKET_INITIAL_STATE);
-  const { online, socket } = useSocket('http://localhost:4000');
+  const { online, socket } = useSocket(
+    'https://node-todo-realtime-app.onrender.com'
+  );
   return (
     <SocketContext.Provider
       value={{

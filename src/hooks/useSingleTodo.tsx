@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 
 const getTodoById = async (id: string) => {
-  const resp = await fetch(`http://${location.hostname}:4000/api/todo/${id}`);
+  const resp = await fetch(
+    `https://node-todo-realtime-app.onrender.com/api/todo/${id}`
+  );
   const data = await resp.json();
   return data;
 };
