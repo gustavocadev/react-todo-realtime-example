@@ -1,31 +1,21 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState, useContext } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 import { useSocketContext } from './hooks/useSocketContext';
+import type { Todo } from './types/Todo';
+import { TodoContext } from './context/todo/TodoContext';
 
 function App() {
   // connect socket
   const { online, socket } = useSocketContext();
-
-  const [todos, setTodos] = useState([
-    {
-      _id: '1',
-      title: 'Todo 1',
-      completed: false,
-    },
-  ]);
-
-  useEffect(() => {
-    socket.on('getTodos', (todos) => {
-      console.log(todos);
-      setTodos(todos);
-    });
-  }, [socket]);
+  const { todos } = useContext(TodoContext);
 
   const handleAddTodo = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const todoName = formData.get('todoName') as string;
+    if (todoName.trim().length === 0) return;
+
     socket.emit('createTodo', { title: todoName });
     e.currentTarget.reset();
   };
@@ -51,7 +41,7 @@ function App() {
         <input
           type="text"
           name="todoName"
-          className="border rounded p-2 w-full text-white bg-gray-800 outline-none border-none"
+          className="border rounded p-2 w-full text-white bg-gray-900 outline-none border-none"
           autoFocus
           id="todo"
         />
@@ -63,25 +53,25 @@ function App() {
         </button>
       </form>
       <ul className="text-xl px-4 mt-4 flex flex-col gap-4">
-        {todos.map((todo, idx) => {
+        {todos?.map((todo, idx) => {
           return (
-            <li className="p-4 bg-purple-200 rounded flex justify-between items-center text-black">
+            <li className="p-4 bg-purple-200 rounded flex flex-col gap-4 sm:gap-1 sm:flex-row justify-between items-center text-black">
               <p>
-                {idx + 1}. {todo.title}
+                {idx + 1}. {todo?.title}
               </p>
               <section className="flex gap-2">
-                <form onSubmit={(event) => handleDeleteTodo(event, todo._id)}>
+                <form onSubmit={(event) => handleDeleteTodo(event, todo?._id)}>
                   <button
                     className="px-4 py-2 rounded bg-red-300 hover:bg-red-400"
                     type="submit"
                   >
                     Delete
                   </button>
-                  <input type="hidden" name="todoId" value={todo._id} />
+                  <input type="hidden" name="todoId" value={todo?._id} />
                 </form>
 
                 <Link
-                  to={`/todo/${todo._id}`}
+                  to={`/todo/${todo?._id}`}
                   className="px-4 py-2 rounded bg-yellow-200 hover:bg-yellow-300"
                 >
                   Edit

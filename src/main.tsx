@@ -11,6 +11,7 @@ import './index.css';
 import { SocketProvider } from './context/socket/SocketProvider';
 import IdTodo from './routes/todo/idTodo';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { TodoProvider } from './context/todo/TodoProvider';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,9 +30,11 @@ const client = new QueryClient();
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <SocketProvider>
-      <QueryClientProvider client={client}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
+      <TodoProvider>
+        <QueryClientProvider client={client}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </TodoProvider>
     </SocketProvider>
   </React.StrictMode>
 );

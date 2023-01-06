@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useSingleTodo } from '../../hooks/useSingleTodo';
@@ -9,11 +10,19 @@ const idTodo = (props: Props) => {
   const navigate = useNavigate();
   const { socket } = useSocketContext();
   const queryTodo = useSingleTodo(params.id as string);
+  const [editName, setEditName] = useState('');
+
+  useEffect(() => {
+    setEditName(queryTodo.data?.title);
+  }, [queryTodo.data]);
 
   const handleEditTodo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = Object.fromEntries(new FormData(e.currentTarget));
+    const formData = Object.fromEntries(new FormData(e.currentTarget)) as {
+      todoName: string;
+    };
 
+    if (formData.todoName?.trim().length === 0) return;
     socket.emit('updateTodo', {
       id: params.id,
       title: formData.todoName,
@@ -31,8 +40,10 @@ const idTodo = (props: Props) => {
         <input
           type="text"
           name="todoName"
-          className="border p-2 rounded bg-gray-800 border-none"
-          defaultValue={queryTodo.data?.title}
+          className="border p-2 rounded bg-gray-900 border-none"
+          autoFocus
+          value={editName}
+          onChange={(e) => setEditName(e.target.value)}
         />
         <input type="hidden" name="todoId" />
         <button
